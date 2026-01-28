@@ -6,6 +6,7 @@ Create a complete web application with Azure deployment configuration, ready for
 - **Trigger**: `/create-new-web-app` or when user asks to create a new web app
 - **Scope**: User-level skill (global)
 - **Prerequisites**: Git, GitHub CLI (gh)
+- **Arguments**: `<app description>` - A brief description of the application (optional, will prompt if not provided)
 
 ## Configuration
 - **GitHub Organization**: RoskildeKommune
@@ -24,9 +25,35 @@ All project files are sourced from the WebAppTemplate repository. See its README
 
 When this skill is invoked, follow these steps in order:
 
+### Step 0: Get App Description
+
+**Check if an app description was provided as an argument.**
+
+If the skill was invoked with an argument (e.g., `/create-new-web-app En dashboard til at vise RPA processer` or `/create-new-web-app A dashboard to display RPA processes`), use that as the app description.
+
+If NO argument was provided, ask the user:
+
+> **What would you like to build?**
+>
+> Please provide a brief description of your application in Danish or English.
+>
+> Examples:
+> - "En intern dashboard til at overvåge RPA processer"
+> - "A customer portal for viewing invoices"
+> - "REST API til integration med økonomisystemet"
+
+**Do not proceed until you have an app description.** This description will be used to:
+- Suggest an appropriate app name
+- Write the README and GitHub repo description
+- Guide project structure recommendations
+
+Store the description in `{{APP_DESCRIPTION}}` for use in later steps.
+
 ### Step 1: Understand User Requirements
 
-Ask the user these questions to determine the best project structure:
+Using the app description as context, ask the user these questions to determine the best project structure:
+
+Based on the app description, you may already be able to infer the answers to some questions. If so, confirm your assumptions with the user rather than asking redundantly.
 
 **Q1: What type of application are you building?**
 
@@ -50,6 +77,8 @@ Options:
 
 **Q3: Application name**
 
+Suggest a name based on `{{APP_DESCRIPTION}}`, but let the user confirm or change it.
+
 Requirements:
 - Must be globally unique (will be used for Azure Web App URL)
 - Lowercase letters, numbers, and hyphens only
@@ -58,11 +87,7 @@ Requirements:
 
 Examples: `rpa-monitoring`, `invoice-processor`, `customer-portal`
 
-**Q4: Short description** (one sentence)
-
-This will be used in README and GitHub repo description.
-
-**Q5: Where should I create the project?**
+**Q4: Where should I create the project?**
 
 Options:
 - A) **Current directory** - Initialize here (directory should be empty)
