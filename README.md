@@ -4,22 +4,26 @@ A Claude Code skill for scaffolding web applications with Azure deployment confi
 
 ## Installation
 
-Download the skill file to your Claude Code commands directory:
+Download the skill file to your Claude Code commands directory using GitHub CLI:
 
 ```bash
 # Create commands directory if it doesn't exist
 mkdir -p ~/.claude/commands
 
-# Download the skill
-curl -o ~/.claude/commands/create-new-web-app.md https://raw.githubusercontent.com/RoskildeKommune/CreateNewAppSkill/main/create-new-web-app.md
+# Download the skill from private repo
+gh api repos/RoskildeKommune/CreateNewAppSkill/contents/create-new-web-app.md \
+  --jq '.content' | base64 -d > ~/.claude/commands/create-new-web-app.md
 ```
+
+> **Note:** Requires GitHub CLI authenticated with access to the RoskildeKommune organization. Run `gh auth login` if not already authenticated.
 
 ## Update
 
 To update to the latest version, re-run the download command:
 
 ```bash
-curl -o ~/.claude/commands/create-new-web-app.md https://raw.githubusercontent.com/RoskildeKommune/CreateNewAppSkill/main/create-new-web-app.md
+gh api repos/RoskildeKommune/CreateNewAppSkill/contents/create-new-web-app.md \
+  --jq '.content' | base64 -d > ~/.claude/commands/create-new-web-app.md
 ```
 
 ## Usage
