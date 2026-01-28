@@ -49,13 +49,40 @@ If NO argument was provided, ask the user:
 
 Store the description in `{{APP_DESCRIPTION}}` for use in later steps.
 
-### Step 1: Understand User Requirements
+### Step 1: Analyze Requirements
 
-Using the app description as context, ask the user these questions to determine the best project structure:
+Using the app description as context, determine the best project structure. Use **smart decision-making** based on confidence level:
 
-Based on the app description, you may already be able to infer the answers to some questions. If so, confirm your assumptions with the user rather than asking redundantly.
+#### Confidence Assessment
 
-**Q1: What type of application are you building?**
+Before asking questions, analyze `{{APP_DESCRIPTION}}` and assess confidence for each decision:
+
+| Confidence | When to apply | Action |
+|------------|---------------|--------|
+| **High** | Description explicitly states the answer | Decide automatically, no question needed |
+| **Medium** | Can reasonably infer from context | Propose your assumption and ask user to confirm |
+| **Low** | Ambiguous or no clear indicators | Ask the question with options |
+
+#### High-Confidence Indicators (skip question)
+
+**App Type (Q1):**
+- "REST API", "API til...", "backend service", "microservice" → **Backend-only**
+- "Dashboard", "portal", "web app", "UI til...", "vise/display" → **Web app with UI**
+- "Landing page", "static site" → **Static website**
+
+**Backend Needed (Q2):**
+- "stores data", "database", "gemme data", "integration med..." → **Yes, needs backend**
+- "display data from [external API]", "vise data fra..." → **No, frontend-only**
+
+#### Medium-Confidence Indicators (propose and confirm)
+
+- "Invoice portal" → Likely needs backend for data storage (confirm)
+- "Monitoring dashboard" → Likely needs backend for real-time data (confirm)
+- "Employee tool" → Could go either way (confirm what data sources)
+
+#### Questions (ask only when needed)
+
+**Q1: What type of application are you building?** *(Skip if high confidence)*
 
 Options:
 - A) **Dashboard or web app with UI** - Most common choice for internal tools
@@ -64,7 +91,7 @@ Options:
 
 *Guidance*: If unsure, choose A - you can always remove the backend later.
 
-**Q2: Does your app need its own backend/API?** (Skip if Q1 = B)
+**Q2: Does your app need its own backend/API?** *(Skip if Q1 = B or high confidence)*
 
 Options:
 - A) **Yes** - The app needs to store data, call internal systems, or have custom business logic
@@ -121,7 +148,38 @@ Based on answers, determine the structure:
 | API only (B) | - | **Backend-only** (FastAPI) |
 | Static (C) | - | **Frontend-only** (React + Vite) |
 
-### Step 4: Clone Template Repository
+### Step 4: Validate Plan
+
+Before proceeding with implementation, present the complete plan to the user for approval.
+
+**Display the following summary:**
+
+```
+## Project Plan Summary
+
+| Setting | Value |
+|---------|-------|
+| **App Name** | {{APP_NAME}} |
+| **Description** | {{APP_DESCRIPTION}} |
+| **Structure** | {{STRUCTURE_TYPE}} (Full-stack / Frontend-only / Backend-only) |
+| **Project Location** | {{PROJECT_DIR}} |
+| **GitHub Repository** | RoskildeKommune/{{APP_NAME}} |
+| **Azure URL** | https://{{APP_NAME}}.azurewebsites.net |
+
+{{IF FULL-STACK}}
+**Deployment Approach:** Single Python app serving static frontend (recommended for prototypes)
+{{END IF}}
+
+---
+
+Does this look correct? Reply **yes** to proceed or tell me what to change.
+```
+
+**Wait for user confirmation before proceeding to Step 5.**
+
+If the user requests changes, update the relevant values and show the summary again.
+
+### Step 5: Clone Template Repository
 
 Clone from the WebAppTemplate repository based on structure type:
 
@@ -156,7 +214,7 @@ mv backend/.* . 2>/dev/null || true
 rm -rf backend
 ```
 
-### Step 5: Customize for Your Project
+### Step 6: Customize for Your Project
 
 After cloning, update files with project-specific values:
 
@@ -188,7 +246,7 @@ find . -type f \( -name "*.json" -o -name "*.md" -o -name "*.html" -o -name "*.p
 Get-ChildItem -Recurse -Include *.json,*.md,*.html,*.py,*.tsx | ForEach-Object { (Get-Content $_.FullName) -replace 'rpa-dashboard', '{{APP_NAME}}' | Set-Content $_.FullName }
 ```
 
-### Step 6: Set Up GitHub Deployment Workflow
+### Step 7: Set Up GitHub Deployment Workflow
 
 Fetch the appropriate workflow from deployment-templates:
 
@@ -233,7 +291,7 @@ Create two Azure Web Apps and deploy separately:
 - `{{APP_NAME}}-api` with `azure-webapp-python.yml`
 - `{{APP_NAME}}-web` with `azure-webapp-node.yml`
 
-### Step 7: Initialize Git and Create GitHub Repository
+### Step 8: Initialize Git and Create GitHub Repository
 
 ```bash
 cd {{PROJECT_DIR}}
@@ -268,7 +326,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>"
 gh repo create RoskildeKommune/{{APP_NAME}} --private --description "{{APP_DESCRIPTION}}" --source=. --remote=origin --push
 ```
 
-### Step 8: Show Next Steps
+### Step 9: Show Next Steps
 
 After successful creation, display:
 
