@@ -52,8 +52,7 @@ Claude will guide you through creating a new web application with:
 This skill requires:
 - [Git](https://git-scm.com/)
 - [GitHub CLI](https://cli.github.com/) (authenticated)
-- Access to [WebAppTemplate](https://github.com/sorabeRK/WebAppTemplate) repository
-- Access to [deployment-templates](https://github.com/RoskildeKommune/deployment-templates) repository
+- Access to [WebAppTemplate](https://github.com/RoskildeKommune/WebAppTemplate) repository
 
 ## Project Structures
 

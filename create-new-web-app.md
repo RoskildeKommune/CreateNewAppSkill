@@ -14,8 +14,8 @@ Create a complete web application with Azure deployment configuration, ready for
 - **App Service Plan**: ASP-internal-web-applications
 
 ## Template Sources
-- **Web App Template**: https://github.com/sorabeRK/WebAppTemplate
-- **Deployment Templates**: https://github.com/RoskildeKommune/deployment-templates
+- **Web App Template**: https://github.com/RoskildeKommune/WebAppTemplate
+  (includes deployment configuration, infrastructure templates, and CI/CD workflows)
 
 All project files are sourced from the WebAppTemplate repository. See its README for the complete directory structure and file contents.
 
@@ -185,16 +185,18 @@ Clone from the WebAppTemplate repository based on structure type:
 
 **Full-stack (React + FastAPI):**
 ```bash
-gh repo clone sorabeRK/WebAppTemplate {{PROJECT_DIR}}
+gh repo clone RoskildeKommune/WebAppTemplate {{PROJECT_DIR}}
 cd {{PROJECT_DIR}}
 rm -rf .git
+# All files kept including deployment infrastructure
 ```
 
 **Frontend-only:**
 ```bash
-gh repo clone sorabeRK/WebAppTemplate {{PROJECT_DIR}}
+gh repo clone RoskildeKommune/WebAppTemplate {{PROJECT_DIR}}
 cd {{PROJECT_DIR}}
-rm -rf .git backend docker-compose.yml
+rm -rf .git backend docker-compose.yml e2e
+# Keep: infrastructure/, scripts/, .github/, .claude/, docs/ for deployment
 
 # Move frontend files to root level
 mv frontend/* .
@@ -204,9 +206,10 @@ rm -rf frontend
 
 **Backend-only:**
 ```bash
-gh repo clone sorabeRK/WebAppTemplate {{PROJECT_DIR}}
+gh repo clone RoskildeKommune/WebAppTemplate {{PROJECT_DIR}}
 cd {{PROJECT_DIR}}
-rm -rf .git frontend docker-compose.yml templates docs
+rm -rf .git frontend docker-compose.yml e2e
+# Keep: infrastructure/, scripts/, .github/, .claude/, docs/, templates/ for deployment
 
 # Move backend files to root level
 mv backend/* .
@@ -248,23 +251,12 @@ Get-ChildItem -Recurse -Include *.json,*.md,*.html,*.py,*.tsx | ForEach-Object {
 
 ### Step 7: Set Up GitHub Deployment Workflow
 
-Fetch the appropriate workflow from deployment-templates:
+The workflow templates are already included in the project from the template clone.
+Workflow setup will be handled automatically when you run `/deploy-prototype`.
 
-**Backend-only (Python):**
-```bash
-mkdir -p .github/workflows
-curl -o .github/workflows/azure-deploy.yml https://raw.githubusercontent.com/RoskildeKommune/deployment-templates/main/.github/workflow-templates/azure-webapp-python.yml
-# Replace {{APP_NAME}} in the workflow file
-```
+No manual action needed in this step.
 
-**Frontend-only (Node.js):**
-```bash
-mkdir -p .github/workflows
-curl -o .github/workflows/azure-deploy.yml https://raw.githubusercontent.com/RoskildeKommune/deployment-templates/main/.github/workflow-templates/azure-webapp-node.yml
-# Replace {{APP_NAME}} in the workflow file
-```
-
-**Full-stack:**
+**Full-stack deployment note:**
 
 Full-stack apps require special deployment consideration. Choose one approach:
 
@@ -272,7 +264,6 @@ Full-stack apps require special deployment consideration. Choose one approach:
 |----------|-------------|-------|
 | **Single Python app** (Recommended) | Prototypes, simple apps | Backend serves frontend as static files |
 | **Two separate apps** | Production, independent scaling | `{{APP_NAME}}-api` + `{{APP_NAME}}-web` |
-| **Docker Compose** | Local development only | Keep for local, use option 1/2 for prod |
 
 **Option A: Single Python app** (Recommended for prototypes)
 
@@ -368,7 +359,7 @@ uvicorn main:app --reload
 # API at http://localhost:8000
 # Docs at http://localhost:8000/docs
 
-**Or use Docker:**
+**Or use Docker (full-stack only):**
 cd {{PROJECT_DIR}}
 docker-compose up --build
 # Frontend: http://localhost:3000
@@ -378,7 +369,10 @@ docker-compose up --build
 
 Run: /deploy-prototype
 
-This will create Azure infrastructure and enable automatic deployments.
+This will use the included infrastructure templates and scripts to:
+- Create Azure Web App
+- Configure GitHub Actions CI/CD
+- Set up automatic deployments on push to main
 
 ### 3. Useful Commands
 
@@ -430,7 +424,7 @@ pip install -r requirements.txt
 
 Check you have access to the WebAppTemplate repository:
 ```bash
-gh repo view sorabeRK/WebAppTemplate
+gh repo view RoskildeKommune/WebAppTemplate
 ```
 
 ---
@@ -441,4 +435,4 @@ gh repo view sorabeRK/WebAppTemplate
 - GitHub workflows are configured but won't run until Azure secrets are set
 - Use `/deploy-prototype` to complete Azure deployment setup
 - Shell scripts use LF line endings (required for Azure Linux containers)
-- Template source: https://github.com/sorabeRK/WebAppTemplate
+- Template source: https://github.com/RoskildeKommune/WebAppTemplate
