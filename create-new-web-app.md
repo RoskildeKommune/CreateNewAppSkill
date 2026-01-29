@@ -293,8 +293,8 @@ cd frontend && npm install && cd ..
 # For frontend-only:
 npm install
 
-# Initialize git
-git init
+# Initialize git with main as default branch
+git init -b main
 
 # Add all files
 git add -A
